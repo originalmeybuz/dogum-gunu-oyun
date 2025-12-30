@@ -50,26 +50,27 @@
       scene.background = new THREE.Color(0x000000);
 
       camera = new THREE.PerspectiveCamera(
-        75,
-        window.innerWidth / window.innerHeight,
-        1,
-        1000
-      );
+  75,
+  window.innerWidth / window.innerHeight,
+  1,
+  1000
+);
 
-      renderer = new THREE.WebGLRenderer({ antialias: false });
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      document.body.appendChild(renderer.domElement);
+camera.position.set(0, 1.6, 5);
 
-      controls = new THREE.PointerLockControls(camera, document.body);
-      scene.add(controls.getObject());
-      controls.getObject().position.set(0, 1.6, 0);
+renderer = new THREE.WebGLRenderer({ antialias: false });
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
 
+controls = new THREE.PointerLockControls(camera, renderer.domElement);
+scene.add(controls.getObject());
 
-      document.body.addEventListener("click", () => {
-        controls.lock();
-        const hint = document.getElementById("hint");
-        if (hint) hint.style.display = "none";
-      });
+renderer.domElement.addEventListener("click", () => {
+  controls.lock();
+  const hint = document.getElementById("hint");
+  if (hint) hint.style.display = "none";
+});
+
 
       /* Işık */
       const light = new THREE.PointLight(0xffffff, 1);
