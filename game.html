@@ -55,13 +55,30 @@ body {
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 
-<script>
+<script> 
 let scene, camera, renderer;
 let yaw = 0, pitch = 0;
 let moveX = 0, moveZ = 0;
+let flamePulse = 0;
+
 
 init();
 animate();
+  function animate() {
+  requestAnimationFrame(animate);
+
+  camera.rotation.order = "YXZ";
+  camera.rotation.y = yaw;
+  camera.rotation.x = pitch;
+
+    flamePulse += 0.1;
+const flicker = 1 + Math.sin(flamePulse) * 0.2;
+flame.scale.set(flicker, flicker, flicker);
+
+
+  renderer.render(scene, camera);
+}
+
 
 /* === EDGE FONKSİYONU === */
 function addEdges(mesh) {
@@ -96,6 +113,41 @@ function init() {
   floor.rotation.x = -Math.PI/2;
   scene.add(floor);
   addEdges(floor);
+  /* === MASA === */
+const table = new THREE.Mesh(
+  new THREE.BoxGeometry(2, 1, 2),
+  new THREE.MeshBasicMaterial({ color: 0x000000 })
+);
+table.position.set(0, 0.5, 0);
+scene.add(table);
+addEdges(table);
+
+/* === PASTA === */
+const cake = new THREE.Mesh(
+  new THREE.CylinderGeometry(0.6, 0.6, 0.4, 16),
+  new THREE.MeshBasicMaterial({ color: 0xffffff })
+);
+cake.position.set(0, 1.2, 0);
+scene.add(cake);
+addEdges(cake);
+
+/* === MUM === */
+const candle = new THREE.Mesh(
+  new THREE.CylinderGeometry(0.05, 0.05, 0.3, 8),
+  new THREE.MeshBasicMaterial({ color: 0x000000 })
+);
+candle.position.set(0, 1.45, 0);
+scene.add(candle);
+addEdges(candle);
+
+/* === ALEV === */
+const flame = new THREE.Mesh(
+  new THREE.SphereGeometry(0.08, 8, 8),
+  new THREE.MeshBasicMaterial({ color: 0xffffff })
+);
+flame.position.set(0, 1.65, 0);
+scene.add(flame);
+
 
   /* === ODA === */
   const roomW = 20, roomD = 20, roomH = 6, wallT = 0.5;
