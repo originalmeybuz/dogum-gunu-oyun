@@ -74,6 +74,17 @@ animate();
     flamePulse += 0.1;
 const flicker = 1 + Math.sin(flamePulse) * 0.2;
 flame.scale.set(flicker, flicker, flicker);
+    /* === ALEV ANİMASYONU === */
+if (flame) {
+  flamePulse += 0.1;
+
+  flame.scale.y = 1 + Math.sin(flamePulse) * 0.3;
+  flame.scale.x = 1 + Math.sin(flamePulse + 1) * 0.1;
+  flame.scale.z = 1 + Math.sin(flamePulse + 2) * 0.1;
+
+  flame.position.y = 1.65 + Math.sin(flamePulse) * 0.02;
+}
+
 
 
   renderer.render(scene, camera);
@@ -141,7 +152,7 @@ scene.add(candle);
 addEdges(candle);
 
 /* === ALEV === */
-const flame = new THREE.Mesh(
+let flame = new THREE.Mesh(
   new THREE.SphereGeometry(0.08, 8, 8),
   new THREE.MeshBasicMaterial({ color: 0xffffff })
 );
