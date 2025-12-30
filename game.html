@@ -4,9 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>Birthday FPS</title>
-  <link rel="stylesheet" href="style.css">
+
   <style>
-    body { margin: 0; overflow: hidden; background: black; }
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: black;
+    }
+
     #hint {
       position: absolute;
       bottom: 20px;
@@ -15,6 +20,7 @@
       color: white;
       font-family: monospace;
       opacity: 0.6;
+      pointer-events: none; /* 🔑 FPS için kritik */
     }
   </style>
 </head>
@@ -22,10 +28,174 @@
 
   <div id="hint">TIKLA VE OYNA</div>
 
-  <!-- Three.js CDN -->
+  <!-- Three.js -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/controls/PointerLockControls.js"></script>
 
-  <script src="main.js"></script>
+  <script>
+    let scene, camera, renderer, controls;
+    let moveForward = false,
+        moveBackward = false,
+        moveLeft = false,
+        moveRight = false;
+
+    const velocity = new THREE.Vector3();
+    const direction = new THREE.Vector3();
+
+    init();
+    animate();
+
+    function init() {
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x000000);
+
+      camera = new THREE.PerspectiveCamera(
+        75,
+        window.innerWidth / window.innerHeight,
+        1,
+        1000
+      );
+
+      renderer = new THREE.WebGLRenderer({ antialias: false });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(renderer.domElement);
+
+      controls = new THREE.PointerLockControls(camera, document.body);
+      scene.add(controls.getObject());
+      controls.getObject().position.set(0, 1.6, 0);
+
+
+      document.body.addEventListener("click", () => {
+        controls.lock();
+        const hint = document.getElementById("hint");
+        if (hint) hint.style.display = "none";
+      });
+
+      /* Işık */
+      const light = new THREE.PointLight(0xffffff, 1);
+      light.position.set(0, 10, 0);
+      scene.add(light);
+
+      /* Zemin */
+      /* ODA PARAMETRELERİ */
+const roomWidth = 20;
+const roomDepth = 20;
+const roomHeight = 6;
+const wallThickness = 0.5;
+
+/* ZEMİN */
+const floor = new THREE.Mesh(
+  new THREE.PlaneGeometry(roomWidth, roomDepth),
+  new THREE.MeshBasicMaterial({ color: 0xffffff })
+);
+floor.rotation.x = -Math.PI / 2;
+scene.add(floor);
+
+/* TAVAN */
+const ceiling = new THREE.Mesh(
+  new THREE.PlaneGeometry(roomWidth, roomDepth),
+  new THREE.MeshBasicMaterial({ color: 0x000000 })
+);
+ceiling.position.y = roomHeight;
+ceiling.rotation.x = Math.PI / 2;
+scene.add(ceiling);
+
+/* DUVAR MALZEMESİ */
+const wallMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+
+/* ARKA DUVAR */
+const backWall = new THREE.Mesh(
+  new THREE.BoxGeometry(roomWidth, roomHeight, wallThickness),
+  wallMat
+);
+backWall.position.set(0, roomHeight / 2, -roomDepth / 2);
+scene.add(backWall);
+
+/* ÖN DUVAR (PENCERE BOŞLUKLU) */
+const frontWallLeft = new THREE.Mesh(
+  new THREE.BoxGeometry(roomWidth / 2 - 2, roomHeight, wallThickness),
+  wallMat
+);
+frontWallLeft.position.set(-roomWidth / 4 - 1, roomHeight / 2, roomDepth / 2);
+scene.add(frontWallLeft);
+
+const frontWallRight = new THREE.Mesh(
+  new THREE.BoxGeometry(roomWidth / 2 - 2, roomHeight, wallThickness),
+  wallMat
+);
+frontWallRight.position.set(roomWidth / 4 + 1, roomHeight / 2, roomDepth / 2);
+scene.add(frontWallRight);
+
+/* PENCERE ÜSTÜ */
+const frontWallTop = new THREE.Mesh(
+  new THREE.BoxGeometry(4, roomHeight / 2 - 1, wallThickness),
+  wallMat
+);
+frontWallTop.position.set(0, roomHeight - 1, roomDepth / 2);
+scene.add(frontWallTop);
+
+/* SOL DUVAR */
+const leftWall = new THREE.Mesh(
+  new THREE.BoxGeometry(wallThickness, roomHeight, roomDepth),
+  wallMat
+);
+leftWall.position.set(-roomWidth / 2, roomHeight / 2, 0);
+scene.add(leftWall);
+
+/* SAĞ DUVAR */
+const rightWall = new THREE.Mesh(
+  new THREE.BoxGeometry(wallThickness, roomHeight, roomDepth),
+  wallMat
+);
+rightWall.position.set(roomWidth / 2, roomHeight / 2, 0);
+scene.add(rightWall);
+
+
+      /* Klavye */
+      document.addEventListener("keydown", onKeyDown);
+      document.addEventListener("keyup", onKeyUp);
+      window.addEventListener("resize", onResize);
+    }
+
+    function onKeyDown(e) {
+      if (e.code === "KeyW") moveForward = true;
+      if (e.code === "KeyS") moveBackward = true;
+      if (e.code === "KeyA") moveLeft = true;
+      if (e.code === "KeyD") moveRight = true;
+    }
+
+    function onKeyUp(e) {
+      if (e.code === "KeyW") moveForward = false;
+      if (e.code === "KeyS") moveBackward = false;
+      if (e.code === "KeyA") moveLeft = false;
+      if (e.code === "KeyD") moveRight = false;
+    }
+
+    function onResize() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+
+      velocity.x -= velocity.x * 0.1;
+      velocity.z -= velocity.z * 0.1;
+
+      direction.z = Number(moveForward) - Number(moveBackward);
+      direction.x = Number(moveRight) - Number(moveLeft);
+      direction.normalize();
+
+      if (moveForward || moveBackward) velocity.z -= direction.z * 0.4;
+      if (moveLeft || moveRight) velocity.x -= direction.x * 0.4;
+
+      controls.moveRight(-velocity.x);
+      controls.moveForward(-velocity.z);
+
+      renderer.render(scene, camera);
+    }
+  </script>
+
 </body>
 </html>
