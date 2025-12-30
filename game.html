@@ -145,6 +145,33 @@ function init() {
   ceiling.rotation.x = Math.PI/2;
   scene.add(ceiling);
   addEdges(ceiling);
+  /* === PENCERE DIŞI SKYLINE === */
+const skylineGroup = new THREE.Group();
+
+for (let i = 0; i < 12; i++) {
+  const w = 1 + Math.random() * 1.5;
+  const h = 2 + Math.random() * 4;
+  const d = 1;
+
+  const building = new THREE.Mesh(
+    new THREE.BoxGeometry(w, h, d),
+    new THREE.MeshBasicMaterial({
+      color: Math.random() > 0.5 ? 0xffffff : 0x000000
+    })
+  );
+
+  building.position.set(
+    -6 + i * 1.2,
+    h / 2,
+    roomD / 2 + 3
+  );
+
+  skylineGroup.add(building);
+  addEdges(building);
+}
+
+scene.add(skylineGroup);
+
 
   window.addEventListener("resize", onResize);
   setupTouchLook();
