@@ -61,6 +61,69 @@ let yaw = 0, pitch = 0;
 let moveX = 0, moveZ = 0;
 
 init();
+  /* ===== ODA ===== */
+const roomW = 20;
+const roomD = 20;
+const roomH = 6;
+const wallT = 0.5;
+
+const wallMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+
+/* ARKA DUVAR */
+const backWall = new THREE.Mesh(
+  new THREE.BoxGeometry(roomW, roomH, wallT),
+  wallMat
+);
+backWall.position.set(0, roomH / 2, -roomD / 2);
+scene.add(backWall);
+
+/* SOL DUVAR */
+const leftWall = new THREE.Mesh(
+  new THREE.BoxGeometry(wallT, roomH, roomD),
+  wallMat
+);
+leftWall.position.set(-roomW / 2, roomH / 2, 0);
+scene.add(leftWall);
+
+/* SAĞ DUVAR */
+const rightWall = new THREE.Mesh(
+  new THREE.BoxGeometry(wallT, roomH, roomD),
+  wallMat
+);
+rightWall.position.set(roomW / 2, roomH / 2, 0);
+scene.add(rightWall);
+
+/* ÖN DUVAR – PENCERELİ */
+const frontLeft = new THREE.Mesh(
+  new THREE.BoxGeometry(roomW / 2 - 2, roomH, wallT),
+  wallMat
+);
+frontLeft.position.set(-roomW / 4 - 1, roomH / 2, roomD / 2);
+scene.add(frontLeft);
+
+const frontRight = new THREE.Mesh(
+  new THREE.BoxGeometry(roomW / 2 - 2, roomH, wallT),
+  wallMat
+);
+frontRight.position.set(roomW / 4 + 1, roomH / 2, roomD / 2);
+scene.add(frontRight);
+
+const frontTop = new THREE.Mesh(
+  new THREE.BoxGeometry(4, roomH / 2 - 1, wallT),
+  wallMat
+);
+frontTop.position.set(0, roomH - 1, roomD / 2);
+scene.add(frontTop);
+
+/* TAVAN */
+const ceiling = new THREE.Mesh(
+  new THREE.PlaneGeometry(roomW, roomD),
+  new THREE.MeshBasicMaterial({ color: 0x000000 })
+);
+ceiling.position.y = roomH;
+ceiling.rotation.x = Math.PI / 2;
+scene.add(ceiling);
+
 animate();
 
 function init() {
