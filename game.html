@@ -61,70 +61,17 @@ let yaw = 0, pitch = 0;
 let moveX = 0, moveZ = 0;
 
 init();
-  /* ===== ODA ===== */
-const roomW = 20;
-const roomD = 20;
-const roomH = 6;
-const wallT = 0.5;
-
-const wallMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-
-/* ARKA DUVAR */
-const backWall = new THREE.Mesh(
-  new THREE.BoxGeometry(roomW, roomH, wallT),
-  wallMat
-);
-backWall.position.set(0, roomH / 2, -roomD / 2);
-scene.add(backWall);
-
-/* SOL DUVAR */
-const leftWall = new THREE.Mesh(
-  new THREE.BoxGeometry(wallT, roomH, roomD),
-  wallMat
-);
-leftWall.position.set(-roomW / 2, roomH / 2, 0);
-scene.add(leftWall);
-
-/* SAĞ DUVAR */
-const rightWall = new THREE.Mesh(
-  new THREE.BoxGeometry(wallT, roomH, roomD),
-  wallMat
-);
-rightWall.position.set(roomW / 2, roomH / 2, 0);
-scene.add(rightWall);
-
-/* ÖN DUVAR – PENCERELİ */
-const frontLeft = new THREE.Mesh(
-  new THREE.BoxGeometry(roomW / 2 - 2, roomH, wallT),
-  wallMat
-);
-frontLeft.position.set(-roomW / 4 - 1, roomH / 2, roomD / 2);
-scene.add(frontLeft);
-
-const frontRight = new THREE.Mesh(
-  new THREE.BoxGeometry(roomW / 2 - 2, roomH, wallT),
-  wallMat
-);
-frontRight.position.set(roomW / 4 + 1, roomH / 2, roomD / 2);
-scene.add(frontRight);
-
-const frontTop = new THREE.Mesh(
-  new THREE.BoxGeometry(4, roomH / 2 - 1, wallT),
-  wallMat
-);
-frontTop.position.set(0, roomH - 1, roomD / 2);
-scene.add(frontTop);
-
-/* TAVAN */
-const ceiling = new THREE.Mesh(
-  new THREE.PlaneGeometry(roomW, roomD),
-  new THREE.MeshBasicMaterial({ color: 0x000000 })
-);
-ceiling.position.y = roomH;
-ceiling.rotation.x = Math.PI / 2;
-scene.add(ceiling);
-
 animate();
+
+/* === EDGE FONKSİYONU === */
+function addEdges(mesh) {
+  const edges = new THREE.EdgesGeometry(mesh.geometry);
+  const line = new THREE.LineSegments(
+    edges,
+    new THREE.LineBasicMaterial({ color: 0x000000 })
+  );
+  mesh.add(line);
+}
 
 function init() {
   scene = new THREE.Scene();
@@ -133,7 +80,7 @@ function init() {
   camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
   camera.position.set(0, 1.6, 5);
 
-  renderer = new THREE.WebGLRenderer({antialias:false});
+  renderer = new THREE.WebGLRenderer({ antialias:false });
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
 
@@ -141,12 +88,63 @@ function init() {
   light.position.set(0, 10, 0);
   scene.add(light);
 
+  /* === ZEMİN === */
   const floor = new THREE.Mesh(
     new THREE.PlaneGeometry(20,20),
-    new THREE.MeshBasicMaterial({color:0xffffff})
+    new THREE.MeshBasicMaterial({ color:0xffffff })
   );
   floor.rotation.x = -Math.PI/2;
   scene.add(floor);
+  addEdges(floor);
+
+  /* === ODA === */
+  const roomW = 20, roomD = 20, roomH = 6, wallT = 0.5;
+  const wallMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+
+  const backWall = new THREE.Mesh(
+    new THREE.BoxGeometry(roomW, roomH, wallT), wallMat
+  );
+  backWall.position.set(0, roomH/2, -roomD/2);
+  scene.add(backWall); addEdges(backWall);
+
+  const leftWall = new THREE.Mesh(
+    new THREE.BoxGeometry(wallT, roomH, roomD), wallMat
+  );
+  leftWall.position.set(-roomW/2, roomH/2, 0);
+  scene.add(leftWall); addEdges(leftWall);
+
+  const rightWall = new THREE.Mesh(
+    new THREE.BoxGeometry(wallT, roomH, roomD), wallMat
+  );
+  rightWall.position.set(roomW/2, roomH/2, 0);
+  scene.add(rightWall); addEdges(rightWall);
+
+  const frontLeft = new THREE.Mesh(
+    new THREE.BoxGeometry(roomW/2-2, roomH, wallT), wallMat
+  );
+  frontLeft.position.set(-roomW/4-1, roomH/2, roomD/2);
+  scene.add(frontLeft); addEdges(frontLeft);
+
+  const frontRight = new THREE.Mesh(
+    new THREE.BoxGeometry(roomW/2-2, roomH, wallT), wallMat
+  );
+  frontRight.position.set(roomW/4+1, roomH/2, roomD/2);
+  scene.add(frontRight); addEdges(frontRight);
+
+  const frontTop = new THREE.Mesh(
+    new THREE.BoxGeometry(4, roomH/2-1, wallT), wallMat
+  );
+  frontTop.position.set(0, roomH-1, roomD/2);
+  scene.add(frontTop); addEdges(frontTop);
+
+  const ceiling = new THREE.Mesh(
+    new THREE.PlaneGeometry(roomW, roomD),
+    new THREE.MeshBasicMaterial({ color:0x000000 })
+  );
+  ceiling.position.y = roomH;
+  ceiling.rotation.x = Math.PI/2;
+  scene.add(ceiling);
+  addEdges(ceiling);
 
   window.addEventListener("resize", onResize);
   setupTouchLook();
@@ -155,7 +153,6 @@ function init() {
 
 function setupTouchLook() {
   let lastX, lastY;
-
   document.addEventListener("touchstart", e => {
     lastX = e.touches[0].clientX;
     lastY = e.touches[0].clientY;
@@ -164,11 +161,9 @@ function setupTouchLook() {
   document.addEventListener("touchmove", e => {
     const dx = e.touches[0].clientX - lastX;
     const dy = e.touches[0].clientY - lastY;
-
     yaw -= dx * 0.002;
     pitch -= dy * 0.002;
     pitch = Math.max(-Math.PI/2, Math.min(Math.PI/2, pitch));
-
     lastX = e.touches[0].clientX;
     lastY = e.touches[0].clientY;
   });
@@ -183,13 +178,10 @@ function setupJoystick() {
     const rect = base.getBoundingClientRect();
     const x = e.touches[0].clientX - rect.left - 60;
     const y = e.touches[0].clientY - rect.top - 60;
-
     const dist = Math.min(radius, Math.hypot(x,y));
     const angle = Math.atan2(y,x);
-
     stick.style.left = 45 + Math.cos(angle)*dist + "px";
     stick.style.top  = 45 + Math.sin(angle)*dist + "px";
-
     moveX = Math.cos(angle) * dist / radius;
     moveZ = Math.sin(angle) * dist / radius;
   });
@@ -203,7 +195,6 @@ function setupJoystick() {
 
 function animate() {
   requestAnimationFrame(animate);
-
   camera.rotation.order = "YXZ";
   camera.rotation.y = yaw;
   camera.rotation.x = pitch;
