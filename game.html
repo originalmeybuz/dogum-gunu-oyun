@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Birthday FPS Mobile</title>
+<title>Birthday FPS</title>
 
 <style>
 body {
@@ -13,16 +13,7 @@ body {
   touch-action: none;
 }
 
-#hint {
-  position: absolute;
-  bottom: 20px;
-  width: 100%;
-  text-align: center;
-  color: white;
-  font-family: monospace;
-  opacity: 0.6;
-}
-
+/* Joystick */
 #joystick {
   position: absolute;
   left: 20px;
@@ -31,8 +22,8 @@ body {
   height: 120px;
   border: 2px solid white;
   border-radius: 50%;
+  z-index: 5;
 }
-
 #stick {
   position: absolute;
   left: 45px;
@@ -42,56 +33,42 @@ body {
   background: white;
   border-radius: 50%;
 }
+
+/* Hediye Butonu */
+#giftBtn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 16px 30px;
+  background: black;
+  color: white;
+  border: 2px solid white;
+  font-family: monospace;
+  font-size: 18px;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 10;
+}
 </style>
 </head>
 
 <body>
 
-<div id="hint">PARMAĞINI KAYDIR → BAK</div>
-
-<div id="joystick">
-  <div id="stick"></div>
-</div>
+<div id="joystick"><div id="stick"></div></div>
+<button id="giftBtn">HEDİYEYİ AÇ</button>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 
-<script> 
+<script>
 let scene, camera, renderer;
 let yaw = 0, pitch = 0;
 let moveX = 0, moveZ = 0;
-let flamePulse = 0;
+let cake;
+let giftBtn;
+const speed = 0.05;
 
-
-init();
-animate();
-  function animate() {
-  requestAnimationFrame(animate);
-
-  camera.rotation.order = "YXZ";
-  camera.rotation.y = yaw;
-  camera.rotation.x = pitch;
-
-    flamePulse += 0.1;
-const flicker = 1 + Math.sin(flamePulse) * 0.2;
-flame.scale.set(flicker, flicker, flicker);
-    /* === ALEV ANİMASYONU === */
-if (flame) {
-  flamePulse += 0.1;
-
-  flame.scale.y = 1 + Math.sin(flamePulse) * 0.3;
-  flame.scale.x = 1 + Math.sin(flamePulse + 1) * 0.1;
-  flame.scale.z = 1 + Math.sin(flamePulse + 2) * 0.1;
-
-  flame.position.y = 1.65 + Math.sin(flamePulse) * 0.02;
-}
-
-
-
-  renderer.render(scene, camera);
-}
-
-
-/* === EDGE FONKSİYONU === */
+/* === KENAR ÇİZGİSİ === */
 function addEdges(mesh) {
   const edges = new THREE.EdgesGeometry(mesh.geometry);
   const line = new THREE.LineSegments(
@@ -101,156 +78,100 @@ function addEdges(mesh) {
   mesh.add(line);
 }
 
+init();
+animate();
+
 function init() {
   scene = new THREE.Scene();
   scene.background = new THREE.Color(0x000000);
 
   camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-  camera.position.set(0, 1.6, 5);
+  camera.position.set(0, 1.6, 6);
 
   renderer = new THREE.WebGLRenderer({ antialias:false });
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
 
+  giftBtn = document.getElementById("giftBtn");
+
+  giftBtn.onclick = () => {
+    window.open("https://LINKINI-BURAYA-YAPISTIR", "_blank");
+  };
+
+  /* Işık */
   const light = new THREE.PointLight(0xffffff, 1);
   light.position.set(0, 10, 0);
   scene.add(light);
 
-  /* === ZEMİN === */
+  /* Zemin */
   const floor = new THREE.Mesh(
     new THREE.PlaneGeometry(20,20),
-    new THREE.MeshBasicMaterial({ color:0xffffff })
+    new THREE.MeshBasicMaterial({ color: 0xffffff })
   );
   floor.rotation.x = -Math.PI/2;
   scene.add(floor);
   addEdges(floor);
-  /* === MASA === */
-const table = new THREE.Mesh(
-  new THREE.BoxGeometry(2, 1, 2),
-  new THREE.MeshBasicMaterial({ color: 0x000000 })
-);
-table.position.set(0, 0.5, 0);
-scene.add(table);
-addEdges(table);
 
-/* === PASTA === */
-const cake = new THREE.Mesh(
-  new THREE.CylinderGeometry(0.6, 0.6, 0.4, 16),
-  new THREE.MeshBasicMaterial({ color: 0xffffff })
-);
-cake.position.set(0, 1.2, 0);
-scene.add(cake);
-addEdges(cake);
-
-/* === MUM === */
-const candle = new THREE.Mesh(
-  new THREE.CylinderGeometry(0.05, 0.05, 0.3, 8),
-  new THREE.MeshBasicMaterial({ color: 0x000000 })
-);
-candle.position.set(0, 1.45, 0);
-scene.add(candle);
-addEdges(candle);
-
-/* === ALEV === */
-let flame = new THREE.Mesh(
-  new THREE.SphereGeometry(0.08, 8, 8),
-  new THREE.MeshBasicMaterial({ color: 0xffffff })
-);
-flame.position.set(0, 1.65, 0);
-scene.add(flame);
-
-
-  /* === ODA === */
-  const roomW = 20, roomD = 20, roomH = 6, wallT = 0.5;
-  const wallMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-
-  const backWall = new THREE.Mesh(
-    new THREE.BoxGeometry(roomW, roomH, wallT), wallMat
-  );
-  backWall.position.set(0, roomH/2, -roomD/2);
-  scene.add(backWall); addEdges(backWall);
-
-  const leftWall = new THREE.Mesh(
-    new THREE.BoxGeometry(wallT, roomH, roomD), wallMat
-  );
-  leftWall.position.set(-roomW/2, roomH/2, 0);
-  scene.add(leftWall); addEdges(leftWall);
-
-  const rightWall = new THREE.Mesh(
-    new THREE.BoxGeometry(wallT, roomH, roomD), wallMat
-  );
-  rightWall.position.set(roomW/2, roomH/2, 0);
-  scene.add(rightWall); addEdges(rightWall);
-
-  const frontLeft = new THREE.Mesh(
-    new THREE.BoxGeometry(roomW/2-2, roomH, wallT), wallMat
-  );
-  frontLeft.position.set(-roomW/4-1, roomH/2, roomD/2);
-  scene.add(frontLeft); addEdges(frontLeft);
-
-  const frontRight = new THREE.Mesh(
-    new THREE.BoxGeometry(roomW/2-2, roomH, wallT), wallMat
-  );
-  frontRight.position.set(roomW/4+1, roomH/2, roomD/2);
-  scene.add(frontRight); addEdges(frontRight);
-
-  const frontTop = new THREE.Mesh(
-    new THREE.BoxGeometry(4, roomH/2-1, wallT), wallMat
-  );
-  frontTop.position.set(0, roomH-1, roomD/2);
-  scene.add(frontTop); addEdges(frontTop);
-
+  /* Tavan */
   const ceiling = new THREE.Mesh(
-    new THREE.PlaneGeometry(roomW, roomD),
-    new THREE.MeshBasicMaterial({ color:0x000000 })
+    new THREE.PlaneGeometry(20,20),
+    new THREE.MeshBasicMaterial({ color: 0x000000 })
   );
-  ceiling.position.y = roomH;
+  ceiling.position.y = 6;
   ceiling.rotation.x = Math.PI/2;
   scene.add(ceiling);
-  addEdges(ceiling);
-  /* === PENCERE DIŞI SKYLINE === */
-const skylineGroup = new THREE.Group();
 
-for (let i = 0; i < 12; i++) {
-  const w = 1 + Math.random() * 1.5;
-  const h = 2 + Math.random() * 4;
-  const d = 1;
+  /* ODA */
+  const wallMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+  const roomW=20, roomD=20, roomH=6, wallT=0.5;
 
-  const building = new THREE.Mesh(
-    new THREE.BoxGeometry(w, h, d),
-    new THREE.MeshBasicMaterial({
-      color: Math.random() > 0.5 ? 0xffffff : 0x000000
-    })
+  const backWall = new THREE.Mesh(new THREE.BoxGeometry(roomW,roomH,wallT),wallMat);
+  backWall.position.set(0,roomH/2,-roomD/2);
+  scene.add(backWall); addEdges(backWall);
+
+  const frontWall = new THREE.Mesh(new THREE.BoxGeometry(roomW,roomH,wallT),wallMat);
+  frontWall.position.set(0,roomH/2,roomD/2);
+  scene.add(frontWall); addEdges(frontWall);
+
+  const leftWall = new THREE.Mesh(new THREE.BoxGeometry(wallT,roomH,roomD),wallMat);
+  leftWall.position.set(-roomW/2,roomH/2,0);
+  scene.add(leftWall); addEdges(leftWall);
+
+  const rightWall = new THREE.Mesh(new THREE.BoxGeometry(wallT,roomH,roomD),wallMat);
+  rightWall.position.set(roomW/2,roomH/2,0);
+  scene.add(rightWall); addEdges(rightWall);
+
+  /* Masa */
+  const table = new THREE.Mesh(
+    new THREE.BoxGeometry(2,1,2),
+    new THREE.MeshBasicMaterial({ color: 0x000000 })
   );
+  table.position.set(0,0.5,0);
+  scene.add(table); addEdges(table);
 
-  building.position.set(
-    -6 + i * 1.2,
-    h / 2,
-    roomD / 2 + 3
+  /* Pasta */
+  cake = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.6,0.6,0.4,16),
+    new THREE.MeshBasicMaterial({ color: 0xffffff })
   );
+  cake.position.set(0,1.2,0);
+  scene.add(cake); addEdges(cake);
 
-  skylineGroup.add(building);
-  addEdges(building);
-}
-
-scene.add(skylineGroup);
-
-
-  window.addEventListener("resize", onResize);
   setupTouchLook();
   setupJoystick();
+  window.addEventListener("resize", onResize);
 }
 
+/* === TOUCH LOOK === */
 function setupTouchLook() {
   let lastX, lastY;
   document.addEventListener("touchstart", e => {
     lastX = e.touches[0].clientX;
     lastY = e.touches[0].clientY;
   });
-
   document.addEventListener("touchmove", e => {
-    const dx = e.touches[0].clientX - lastX;
-    const dy = e.touches[0].clientY - lastY;
+    let dx = e.touches[0].clientX - lastX;
+    let dy = e.touches[0].clientY - lastY;
     yaw -= dx * 0.002;
     pitch -= dy * 0.002;
     pitch = Math.max(-Math.PI/2, Math.min(Math.PI/2, pitch));
@@ -259,12 +180,14 @@ function setupTouchLook() {
   });
 }
 
+/* === JOYSTICK === */
 function setupJoystick() {
   const stick = document.getElementById("stick");
   const base = document.getElementById("joystick");
   const radius = 40;
 
   base.addEventListener("touchmove", e => {
+    e.preventDefault();
     const rect = base.getBoundingClientRect();
     const x = e.touches[0].clientX - rect.left - 60;
     const y = e.touches[0].clientY - rect.top - 60;
@@ -277,23 +200,32 @@ function setupJoystick() {
   });
 
   base.addEventListener("touchend", () => {
-    stick.style.left = "45px";
-    stick.style.top = "45px";
+    stick.style.left="45px"; stick.style.top="45px";
     moveX = moveZ = 0;
   });
 }
 
+/* === ANIMATE === */
 function animate() {
   requestAnimationFrame(animate);
+
   camera.rotation.order = "YXZ";
   camera.rotation.y = yaw;
   camera.rotation.x = pitch;
 
-  const speed = 0.05;
-  camera.position.x += Math.sin(yaw) * moveZ * speed;
-  camera.position.z += Math.cos(yaw) * moveZ * speed;
-  camera.position.x += Math.cos(yaw) * moveX * speed;
-  camera.position.z -= Math.sin(yaw) * moveX * speed;
+  camera.position.x += Math.sin(yaw)*moveZ*speed;
+  camera.position.z += Math.cos(yaw)*moveZ*speed;
+  camera.position.x += Math.cos(yaw)*moveX*speed;
+  camera.position.z -= Math.sin(yaw)*moveX*speed;
+
+  const dist = camera.position.distanceTo(cake.position);
+  if (dist < 2) {
+    giftBtn.style.opacity = "1";
+    giftBtn.style.pointerEvents = "auto";
+  } else {
+    giftBtn.style.opacity = "0";
+    giftBtn.style.pointerEvents = "none";
+  }
 
   renderer.render(scene, camera);
 }
