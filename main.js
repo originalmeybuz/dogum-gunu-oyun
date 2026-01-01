@@ -48,18 +48,72 @@ function init() {
   floor.rotation.x = -Math.PI / 2;
   scene.add(floor);
 
-  // ===== 🌌 YILDIZ GÖKYÜZÜ (10 OCAK 00:00) =====
-  const starTexture = new THREE.TextureLoader().load("10ocak00.00.png");
+  // ===== GÖKYÜZÜ =====
+const starTexture = new THREE.TextureLoader().load("10ocak00.00.png");
 
-  const sky = new THREE.Mesh(
-    new THREE.SphereGeometry(1000, 64, 64),
-    new THREE.MeshBasicMaterial({
-      map: starTexture,
-      side: THREE.BackSide
-        color: 0x0b1026
-    })
-  );
-  scene.add(sky);
+const skyGeometry = new THREE.SphereGeometry(1000, 64, 64);
+const skyMaterial = new THREE.MeshBasicMaterial({
+  map: starTexture,
+  side: THREE.BackSide
+});
+
+const sky = new THREE.Mesh(skyGeometry, skyMaterial);
+scene.add(sky);
+    // ===== ORION =====
+const orionStars = [
+  { x: 200, y: 150, z: -800 }, // Betelgeuse
+  { x: 260, y: 50,  z: -820 }, // Bellatrix
+  { x: 220, y: -50, z: -820 }, // Alnilam
+  { x: 200, y: -100,z: -830 }, // Mintaka
+  { x: 180, y: -180,z: -840 }, // Saiph
+  { x: 240, y: -200,z: -850 }  // Rigel
+];
+
+const orionLines = [
+  [0,1],
+  [1,2],
+  [2,3],
+  [3,4],
+  [4,5]
+];
+
+drawConstellation(orionStars, orionLines);
+
+
+    function drawConstellation(points, lines) {
+  // yıldızlar
+  const starMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+
+  points.forEach(p => {
+    const star = new THREE.Mesh(
+      new THREE.SphereGeometry(3, 8, 8),
+      starMaterial
+    );
+    star.position.set(p.x, p.y, p.z);
+    scene.add(star);
+  });
+
+  // çizgiler
+  lines.forEach(l => {
+    const geometry = new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(
+        points[l[0]].x,
+        points[l[0]].y,
+        points[l[0]].z
+      ),
+      new THREE.Vector3(
+        points[l[1]].x,
+        points[l[1]].y,
+        points[l[1]].z
+      )
+    ]);
+
+    const material = new THREE.LineBasicMaterial({ color: 0x00ff00 });
+    const line = new THREE.Line(geometry, material);
+    scene.add(line);
+  });
+}
+
 
   // ===== KONTROLLER =====
   document.addEventListener("keydown", onKeyDown);
