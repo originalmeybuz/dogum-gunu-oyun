@@ -37,6 +37,18 @@ function init() {
   const light = new THREE.PointLight(0xffffff, 1);
   light.position.set(0, 10, 0);
   scene.add(light);
+    // ===== GÖKYÜZÜ / YILDIZ HARİTASI =====
+const starTexture = new THREE.TextureLoader().load("10ocak00.00.png");
+
+const skyGeometry = new THREE.SphereGeometry(1000, 60, 40);
+const skyMaterial = new THREE.MeshBasicMaterial({
+  map: starTexture,
+  side: THREE.BackSide
+});
+
+const sky = new THREE.Mesh(skyGeometry, skyMaterial);
+scene.add(sky);
+
 
   /* ========== ZEMİN ========== */
   const floorGeometry = new THREE.PlaneGeometry(50, 50);
