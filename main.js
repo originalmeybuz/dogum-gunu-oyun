@@ -11,90 +11,72 @@ init();
 animate();
 
 function init() {
+  // ===== SAHNE =====
   scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x000000);
+  scene.background = new THREE.Color(0x000000); // test bitti, tekrar siyah
 
+  // ===== KAMERA =====
   camera = new THREE.PerspectiveCamera(
     75,
     window.innerWidth / window.innerHeight,
     1,
     2000
   );
+  camera.position.set(0, 1.6, 5);
 
+  // ===== RENDERER =====
   renderer = new THREE.WebGLRenderer({ antialias: false });
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
 
+  // ===== FPS KONTROL =====
   controls = new THREE.PointerLockControls(camera, document.body);
-
-  document.body.addEventListener('click', () => {
-    controls.lock();
-  });
-
+  document.body.addEventListener("click", () => controls.lock());
   scene.add(controls.getObject());
 
-  /* ========== IŞIK ========== */
+  // ===== IŞIK =====
   const light = new THREE.PointLight(0xffffff, 1);
   light.position.set(0, 10, 0);
   scene.add(light);
-    // ===== GÖKYÜZÜ / YILDIZ HARİTASI =====
-const starTexture = new THREE.TextureLoader().load("10ocak00.00.png");
 
-const skyGeometry = new THREE.SphereGeometry(1000, 60, 40);
-const skyMaterial = new THREE.MeshBasicMaterial({
-  map: starTexture,
-  side: THREE.BackSide
-});
-
-const sky = new THREE.Mesh(skyGeometry, skyMaterial);
-scene.add(sky);
-
-
-  /* ========== ZEMİN ========== */
-  const floorGeometry = new THREE.PlaneGeometry(50, 50);
-  const floorMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
-  const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+  // ===== ZEMİN =====
+  const floor = new THREE.Mesh(
+    new THREE.PlaneGeometry(50, 50),
+    new THREE.MeshBasicMaterial({ color: 0xffffff })
+  );
   floor.rotation.x = -Math.PI / 2;
   scene.add(floor);
 
-  /* =================================================
-     🌌 YILDIZ HARİTASI – 10 OCAK 00:00 (BALIKESİR)
-     ================================================= */
+  // ===== 🌌 YILDIZ GÖKYÜZÜ (10 OCAK 00:00) =====
   const starTexture = new THREE.TextureLoader().load("10ocak00.00.png");
 
-  const starGeometry = new THREE.SphereGeometry(800, 64, 64);
-  const starMaterial = new THREE.MeshBasicMaterial({
-    map: starTexture,
-    side: THREE.BackSide
-  });
+  const sky = new THREE.Mesh(
+    new THREE.SphereGeometry(1000, 64, 64),
+    new THREE.MeshBasicMaterial({
+      map: starTexture,
+      side: THREE.BackSide
+    })
+  );
+  scene.add(sky);
 
-  const starSky = new THREE.Mesh(starGeometry, starMaterial);
-  scene.add(starSky);
-  /* ================================================= */
-
-  /* ========== TUŞLAR ========== */
-  document.addEventListener('keydown', onKeyDown);
-  document.addEventListener('keyup', onKeyUp);
-
-  window.addEventListener('resize', onWindowResize);
+  // ===== KONTROLLER =====
+  document.addEventListener("keydown", onKeyDown);
+  document.addEventListener("keyup", onKeyUp);
+  window.addEventListener("resize", onWindowResize);
 }
 
 function onKeyDown(event) {
-  switch (event.code) {
-    case 'KeyW': moveForward = true; break;
-    case 'KeyS': moveBackward = true; break;
-    case 'KeyA': moveLeft = true; break;
-    case 'KeyD': moveRight = true; break;
-  }
+  if (event.code === "KeyW") moveForward = true;
+  if (event.code === "KeyS") moveBackward = true;
+  if (event.code === "KeyA") moveLeft = true;
+  if (event.code === "KeyD") moveRight = true;
 }
 
 function onKeyUp(event) {
-  switch (event.code) {
-    case 'KeyW': moveForward = false; break;
-    case 'KeyS': moveBackward = false; break;
-    case 'KeyA': moveLeft = false; break;
-    case 'KeyD': moveRight = false; break;
-  }
+  if (event.code === "KeyW") moveForward = false;
+  if (event.code === "KeyS") moveBackward = false;
+  if (event.code === "KeyA") moveLeft = false;
+  if (event.code === "KeyD") moveRight = false;
 }
 
 function onWindowResize() {
