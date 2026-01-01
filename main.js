@@ -13,7 +13,8 @@ animate();
 function init() {
   // ===== SAHNE =====
   scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x000000); // test bitti, tekrar siyah
+  scene.background = new THREE.Color(0x0b1026);
+
 
   // ===== KAMERA =====
   camera = new THREE.PerspectiveCamera(
