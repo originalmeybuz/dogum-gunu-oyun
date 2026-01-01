@@ -18,7 +18,7 @@ function init() {
     75,
     window.innerWidth / window.innerHeight,
     1,
-    1000
+    2000
   );
 
   renderer = new THREE.WebGLRenderer({ antialias: false });
@@ -33,19 +33,34 @@ function init() {
 
   scene.add(controls.getObject());
 
-  // Basit ışık (beyaz)
+  /* ========== IŞIK ========== */
   const light = new THREE.PointLight(0xffffff, 1);
   light.position.set(0, 10, 0);
   scene.add(light);
 
-  // Zemin (beyaz)
+  /* ========== ZEMİN ========== */
   const floorGeometry = new THREE.PlaneGeometry(50, 50);
   const floorMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
   const floor = new THREE.Mesh(floorGeometry, floorMaterial);
   floor.rotation.x = -Math.PI / 2;
   scene.add(floor);
 
-  // Tuşlar
+  /* =================================================
+     🌌 YILDIZ HARİTASI – 10 OCAK 00:00 (BALIKESİR)
+     ================================================= */
+  const starTexture = new THREE.TextureLoader().load("10ocak00.00.png");
+
+  const starGeometry = new THREE.SphereGeometry(800, 64, 64);
+  const starMaterial = new THREE.MeshBasicMaterial({
+    map: starTexture,
+    side: THREE.BackSide
+  });
+
+  const starSky = new THREE.Mesh(starGeometry, starMaterial);
+  scene.add(starSky);
+  /* ================================================= */
+
+  /* ========== TUŞLAR ========== */
   document.addEventListener('keydown', onKeyDown);
   document.addEventListener('keyup', onKeyUp);
 
