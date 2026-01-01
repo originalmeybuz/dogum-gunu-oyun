@@ -56,6 +56,7 @@ function init() {
     new THREE.MeshBasicMaterial({
       map: starTexture,
       side: THREE.BackSide
+        color: 0x0b1026
     })
   );
   scene.add(sky);
