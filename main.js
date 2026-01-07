@@ -34,6 +34,13 @@ function init() {
   controls = new THREE.PointerLockControls(camera, document.body);
   document.body.addEventListener("click", () => controls.lock());
   scene.add(controls.getObject());
+    document.body.addEventListener('click', () => {
+  controls.lock();
+
+  const hint = document.getElementById("gameHint");
+  if (hint) hint.style.display = "none";
+});
+
 
   // ===== IŞIK =====
   const light = new THREE.PointLight(0xffffff, 1);
