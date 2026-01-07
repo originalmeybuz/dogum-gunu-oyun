@@ -1,29 +1,63 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-  <title>Doğum Günün Kutlu Olsun</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Doğum Günün Kutlu Olsun</title>
+
+<style>
+body {
+  margin: 0;
+  background: black;
+  color: white;
+  font-family: monospace;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+#screen {
+  text-align: center;
+}
+
+#screen h1 {
+  font-size: 3rem;
+  margin-bottom: 30px;
+}
+
+#playBtn {
+  font-size: 1.6rem;
+  padding: 12px 32px;
+  border: none;
+  background: white;
+  color: black;
+  cursor: pointer;
+}
+
+#info {
+  margin-top: 14px;
+  font-size: 0.9rem;
+  opacity: 0.45;
+}
+</style>
 </head>
+
 <body>
 
-  <div id="screen">
-    <h1>DOĞUM GÜNÜN<br>KUTLU OLSUN<br>NİSAAA</h1>
-    <button onclick="startGame()">OYNA</button>
-  </div>
+<div id="screen">
+  <h1>İyi ki doğdun<br>İyi ki varsın<br>Nisanur</h1>
 
-  <div id="gameHint">
-  <p>Hareket etmek için soldaki yeri kullan</p>
-  <p>hediyeye yaklaş</p>
+  <button id="playBtn" onclick="startGame()">OYNA</button>
+
+  <div id="info">ekrana dokun • etrafına bak • yürü</div>
 </div>
 
-  
-  <script>
-    function startGame() {
-      window.location.href = "game.html";
-    }
-  </script>
+<script>
+function startGame() {
+  window.location.href = "game.html";
+}
+</script>
 
 </body>
 </html>
