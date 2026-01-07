@@ -36,4 +36,22 @@ button {
 button:hover {
   background: white;
   color: black;
+
+  #gameHint {
+  position: fixed;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 16px;
+  font-family: Arial, sans-serif;
+  pointer-events: none; /* oyunu engellemez */
+  z-index: 999;
+}
+
+#gameHint p {
+  margin: 4px 0;
+}
+
 }
